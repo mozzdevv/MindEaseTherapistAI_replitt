@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import ThemeToggle from "./theme-toggle";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "./ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,11 +13,7 @@ export default function Navbar() {
   // Handle scroll effect for navbar
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(window.scrollY > 10);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -29,20 +24,16 @@ export default function Navbar() {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
-  // Fix Link + a tag nesting by creating a custom nav link component
-  const NavLink = ({ to, children, className }: { to: string; children: React.ReactNode; className?: string }) => {
+  const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => {
     const isActive = location === to;
-    const baseClasses = "relative transition-colors duration-200";
-    const activeClasses = "text-primary font-medium";
-    const inactiveClasses = "text-foreground/80 hover:text-primary/80";
-
     return (
       <Link href={to}>
-        <div className={`${baseClasses} ${isActive ? activeClasses : inactiveClasses} ${className} cursor-pointer`}>
+        <div className={`cursor-pointer text-sm font-medium transition-all duration-300 relative px-3 py-1 ${isActive ? "text-foreground" : "text-foreground/60 hover:text-foreground"
+          }`}>
           {children}
           {isActive && (
-            <motion.div 
-              className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" 
+            <motion.div
+              className="absolute bottom-0 left-0 right-0 h-0.5 bg-foreground/80 rounded-full mx-3"
               layoutId="navbar-indicator"
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             />
@@ -53,133 +44,82 @@ export default function Navbar() {
   };
 
   return (
-    <header 
-      className={`sticky top-0 z-50 backdrop-blur-lg ${
-        scrolled 
-          ? "bg-background/80 shadow-sm" 
-          : "bg-transparent"
-      } transition-all duration-300`}
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 rounded-b-2xl ${scrolled
+          ? "py-3 bg-white/30 dark:bg-black/30 backdrop-blur-md shadow-sm border-b border-white/20"
+          : "py-6 bg-transparent"
+        }`}
     >
-      <div className="premium-container max-w-7xl">
-        <div className="flex items-center justify-between py-4">
+      <div className="container max-w-6xl mx-auto px-6">
+        <div className="flex items-center justify-between">
           <Link href="/">
-            <div className="flex items-center space-x-3 cursor-pointer group">
-              <div className="relative flex items-center justify-center h-10 w-10">
-                <div className="absolute inset-0 bg-primary/10 rounded-full transform group-hover:scale-110 transition-transform duration-300"></div>
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  className="h-6 w-6 text-primary relative z-10"
+            <div className="flex items-center space-x-2 cursor-pointer group">
+              {/* Minimal Logo */}
+              <div className="relative flex items-center justify-center h-8 w-8">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="1.5"
+                  strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  className="w-6 h-6 text-foreground/80 group-hover:text-foreground transition-colors"
                 >
-                  <path className="text-slate-100" d="M12 3C7 3 3 5 3 10c0 4 4 5 9 11c5-6 9-7 9-11c0-5-4-7-9-7z" />
-                  <path className="text-slate-100" d="M12 3C9 3 6 4 6 8c0 3 3 4 6 8c3-4 6-5 6-8c0-4-3-5-6-5z" />
-                  <circle className="text-slate-100" cx="12" cy="10" r="2" />
+                  <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+                  <path d="M7 13l2.5-2.5 2.5 2.5 2.5-2.5 2.5 2.5" />
                 </svg>
               </div>
-              <h1 className="text-xl font-medium text-primary">
+              <span className="text-xl font-heading font-semibold text-foreground tracking-tight">
                 MindEase
-              </h1>
+              </span>
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-2 bg-white/20 dark:bg-black/20 backdrop-blur-sm p-1.5 rounded-full border border-white/10">
             <NavLink to="/">Home</NavLink>
             <NavLink to="/resources">Resources</NavLink>
-            <NavLink to="/faq">Privacy FAQ</NavLink>
+            <NavLink to="/faq">About</NavLink>
           </nav>
+
+          {/* Empty div to balance flex for desktop, or separate actions if needed */}
+          <div className="hidden md:block w-8"></div>
 
           {isMobile && (
             <Button
               variant="ghost"
               size="icon"
               onClick={toggleMobileMenu}
-              className="md:hidden w-9 h-9 rounded-full hover:bg-primary/10"
-              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              className="md:hidden rounded-full hover:bg-black/5"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
+                className="h-6 w-6 text-foreground"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                {mobileMenuOpen ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                )}
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
               </svg>
             </Button>
           )}
         </div>
       </div>
 
-      {/* Mobile menu with animation */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {mobileMenuOpen && isMobile && (
-          <motion.div 
-            className="md:hidden backdrop-blur-xl bg-background/90 border-t border-border/10 overflow-hidden"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
+          <motion.div
+            className="absolute top-full left-0 right-0 bg-background/95 backdrop-blur-xl border-b border-border/10 p-4 shadow-lg"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
           >
-            <div className="premium-container py-3 space-y-1">
-              <Link href="/">
-                <div className={`flex items-center space-x-2 py-3 px-3 rounded-lg ${
-                  location === "/" 
-                    ? "bg-primary/10 text-primary"
-                    : "hover:bg-primary/5"
-                } transition-colors cursor-pointer`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                  <span>Home</span>
-                </div>
-              </Link>
-
-              <Link href="/resources">
-                <div className={`flex items-center space-x-2 py-3 px-3 rounded-lg ${
-                  location === "/resources" 
-                    ? "bg-primary/10 text-primary"
-                    : "hover:bg-primary/5"
-                } transition-colors cursor-pointer`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                  </svg>
-                  <span>Resources</span>
-                </div>
-              </Link>
-
-              <Link href="/faq">
-                <div className={`flex items-center space-x-2 py-3 px-3 rounded-lg ${
-                  location === "/faq" 
-                    ? "bg-primary/10 text-primary"
-                    : "hover:bg-primary/5"
-                } transition-colors cursor-pointer`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>Privacy FAQ</span>
-                </div>
-              </Link>
-
-              {/* Theme toggle section removed as we no longer support theme switching */}
+            <div className="flex flex-col space-y-2">
+              <Link href="/"><span className="block py-3 px-4 rounded-lg hover:bg-black/5 text-foreground font-medium" onClick={() => setMobileMenuOpen(false)}>Home</span></Link>
+              <Link href="/resources"><span className="block py-3 px-4 rounded-lg hover:bg-black/5 text-foreground font-medium" onClick={() => setMobileMenuOpen(false)}>Resources</span></Link>
+              <Link href="/faq"><span className="block py-3 px-4 rounded-lg hover:bg-black/5 text-foreground font-medium" onClick={() => setMobileMenuOpen(false)}>About</span></Link>
             </div>
           </motion.div>
         )}

@@ -62,6 +62,10 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
       },
+      fontFamily: {
+        sans: ["Inter", "sans-serif"],
+        heading: ["Outfit", "sans-serif"],
+      },
       keyframes: {
         "accordion-down": {
           from: {
