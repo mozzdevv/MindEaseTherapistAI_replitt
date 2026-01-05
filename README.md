@@ -48,7 +48,14 @@ MindEase is a privacy-focused, AI-powered mental health chat application. It pro
 ## ⚙️ Configuration
 
 The application uses a server-side proxy at `/api/chat` to handle AI requests securely.
-The DeepSeek API key is configured in `server/routes.ts`.
+
+**Security Note:**
+The DeepSeek API key must be provided via environment variables.
+Create a `.env` file in the root directory:
+
+```bash
+DEEPSEEK_API_KEY=your_key_here
+```
 
 ## 🔒 Privacy
 
